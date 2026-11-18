@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  OWNER
+  SHIPYARD
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  passwordHash String
+  name         String
+  role         Role       @default(OWNER)
+  createdAt    DateTime   @default(now())
+  vessels      Vessel[]
+  shipyards    Shipyard[]
+}
+
+model Vessel {
+  id        String    @id @default(cuid())
+  ownerId   String
+  owner     User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name      String
+  imoNumber String?
+  type      String    // ferry, porte-conteneurs...
+  lengthM   Float
+  draftM    Float
+  bookings  Booking[]
+  createdAt DateTime  @default(now())
+}
+
+model Shipyard {
+  id          String   @id @default(cuid())
+  managerId   String
+  manager     User     @relation(fields: [managerId], references: [id], onDelete: Cascade)
+  name        String
+  port        String
+  country     String?
+  maxLengthM  Float    // capacité du dock
+  maxDraftM   Float
+  services    String[]
+  slots       Slot[]
+  createdAt   DateTime @default(now())
+
+  @@index([port])
+}
+
+model Slot {
+  id          String    @id @default(cuid())
+  shipyardId  String
+  shipyard    Shipyard  @relation(fields: [shipyardId], references: [id], onDelete: Cascade)
+  dockName    String?
+  startDate   DateTime
+  endDate     DateTime
+  isAvailable Boolean   @default(true)
+  bookings    Booking[]
+
+  @@index([shipyardId, startDate])
+}
+
+model Booking {
+  id        String        @id @default(cuid())
+  vesselId  String
+  vessel    Vessel        @relation(fields: [vesselId], references: [id], onDelete: Cascade)
+  slotId    String
+  slot      Slot          @relation(fields: [slotId], references: [id], onDelete: Cascade)
+  status    BookingStatus @default(PENDING)
+  message   String?
+  createdAt DateTime      @default(now())
+  decidedAt DateTime?
+}
