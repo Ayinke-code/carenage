@@ -5,6 +5,9 @@ Prototype : des armateurs réservent un créneau de carénage auprès de chantie
 ## Stack
 Next.js (App Router) · TypeScript · Prisma · PostgreSQL · Tailwind CSS
 
+## Prérequis
+Node.js 20+, Docker (pour PostgreSQL, exposé sur le port 5433)
+
 ## Lancer le projet
 ```bash
 cp .env.example .env
@@ -16,12 +19,12 @@ npm run dev
 ```
 Ouvrir http://localhost:3000
 
-## Comptes de démo (mot de passe : demo1234)
+## Comptes de test (mot de passe : carenage123)
 | Rôle | Email |
 |---|---|
-| Armateur | owner@demo.com |
-| Chantier | yard@demo.com |
-| Admin | admin@demo.com |
+| Armateur | armateur@carenage.test |
+| Chantier | chantier@carenage.test |
+| Administrateur | admin@carenage.test |
 
 ## Parcours implémenté
 1. L'armateur enregistre ses navires (longueur, tirant d'eau).

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/session";
+import StatusBadge from "@/components/StatusBadge";
 
 const LABELS = {
   PENDING: "En attente",
@@ -35,14 +36,13 @@ export default async function AdminPage({
 
   return (
     <main className="mx-auto mt-10 max-w-3xl space-y-6 p-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">Administration</h1>
-        <Link href="/dashboard" className="text-sm underline">← Tableau de bord</Link>
       </div>
 
       <div className="grid grid-cols-3 gap-3 text-center">
         {(Object.keys(LABELS) as Status[]).map((s) => (
-          <Link key={s} href={`/admin?status=${s}`} className="rounded border p-3">
+          <Link key={s} href={`/admin?status=${s}`} className="rounded-lg border border-slate-200 bg-white shadow-sm p-3">
             <p className="text-2xl font-bold">{countOf(s)}</p>
             <p className="text-sm text-gray-600">{LABELS[s]}</p>
           </Link>
@@ -52,14 +52,17 @@ export default async function AdminPage({
 
       <ul className="space-y-2">
         {bookings.map((b) => (
-          <li key={b.id} className="rounded border p-3 text-sm">
+          <li key={b.id} className="rounded-lg border border-slate-200 bg-white shadow-sm p-3 text-sm">
             <p className="font-medium">
               {b.vessel.name} ({b.vessel.owner.name}) → {b.slot.shipyard.name}, {b.slot.shipyard.port}
             </p>
-            <p className="text-gray-600">
-              {b.slot.startDate.toLocaleDateString("fr-FR")} →{" "}
-              {b.slot.endDate.toLocaleDateString("fr-FR")} · {LABELS[b.status]}
-            </p>
+            <div className="mt-1 flex items-center gap-2 text-gray-600">
+              <span>
+                {b.slot.startDate.toLocaleDateString("fr-FR")} →{" "}
+                {b.slot.endDate.toLocaleDateString("fr-FR")}
+              </span>
+              <StatusBadge status={b.status} />
+            </div>
           </li>
         ))}
         {bookings.length === 0 && <p className="text-gray-500">Aucune demande.</p>}

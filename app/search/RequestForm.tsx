@@ -19,7 +19,7 @@ export default function RequestForm({
       <input
         name="message"
         placeholder="Message pour le chantier (optionnel)"
-        className="rounded border p-2 text-sm"
+        className="rounded-lg border border-slate-200 bg-white shadow-sm p-2 text-sm"
       />
       {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
       <button

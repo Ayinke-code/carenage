@@ -1,12 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/session";
-
-const LABELS = {
-  PENDING: "En attente",
-  ACCEPTED: "Acceptée",
-  REJECTED: "Refusée",
-} as const;
+import StatusBadge from "@/components/StatusBadge";
 
 export default async function BookingsPage() {
   const session = await requireRole("OWNER");
@@ -19,14 +14,13 @@ export default async function BookingsPage() {
 
   return (
     <main className="mx-auto mt-10 max-w-2xl space-y-6 p-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">Mes demandes</h1>
-        <Link href="/dashboard" className="text-sm underline">← Tableau de bord</Link>
       </div>
 
       <ul className="space-y-2">
         {bookings.map((b) => (
-          <li key={b.id} className="rounded border p-3">
+          <li key={b.id} className="rounded-lg border border-slate-200 bg-white shadow-sm p-3">
             <p className="font-medium">
               {b.vessel.name} → {b.slot.shipyard.name} ({b.slot.shipyard.port})
             </p>
@@ -34,7 +28,7 @@ export default async function BookingsPage() {
               {b.slot.startDate.toLocaleDateString("fr-FR")} →{" "}
               {b.slot.endDate.toLocaleDateString("fr-FR")}
             </p>
-            <p className="text-sm">Statut : {LABELS[b.status]}</p>
+            <div className="mt-2"><StatusBadge status={b.status} /></div>
           </li>
         ))}
         {bookings.length === 0 && <p className="text-gray-500">Aucune demande.</p>}

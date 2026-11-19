@@ -2,12 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/session";
 import { decideBooking } from "./actions";
-
-const LABELS = {
-  PENDING: "En attente",
-  ACCEPTED: "Acceptée",
-  REJECTED: "Refusée",
-} as const;
+import StatusBadge from "@/components/StatusBadge";
 
 export default async function RequestsPage() {
   const session = await requireRole("SHIPYARD");
@@ -23,14 +18,13 @@ export default async function RequestsPage() {
 
   return (
     <main className="mx-auto mt-10 max-w-2xl space-y-6 p-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">Demandes reçues</h1>
-        <Link href="/dashboard" className="text-sm underline">← Tableau de bord</Link>
       </div>
 
       <ul className="space-y-3">
         {bookings.map((b) => (
-          <li key={b.id} className="rounded border p-4">
+          <li key={b.id} className="rounded-lg border border-slate-200 bg-white shadow-sm p-4">
             <p className="font-medium">
               {b.vessel.name} ({b.vessel.type}, {b.vessel.lengthM} m, {b.vessel.draftM} m)
             </p>
@@ -41,7 +35,7 @@ export default async function RequestsPage() {
               {b.slot.dockName ? ` · ${b.slot.dockName}` : ""}
             </p>
             {b.message && <p className="mt-1 text-sm italic">« {b.message} »</p>}
-            <p className="mt-2 text-sm">Statut : {LABELS[b.status]}</p>
+            <div className="mt-2"><StatusBadge status={b.status} /></div>
 
             {b.status === "PENDING" && (
               <form action={decideBooking} className="mt-3 flex gap-2">

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { requireRole } from "@/lib/session";
 import RequestForm from "./RequestForm";
+import StatusBadge from "@/components/StatusBadge";
 
 export default async function SearchPage({
   searchParams,
@@ -37,27 +38,49 @@ export default async function SearchPage({
 
   return (
     <main className="mx-auto mt-10 max-w-2xl space-y-6 p-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">Rechercher un chantier</h1>
-        <Link href="/dashboard" className="text-sm underline">← Tableau de bord</Link>
       </div>
 
-      <form method="get" className="grid gap-3 rounded border p-4">
-        <select name="vesselId" defaultValue={vesselId ?? ""} required className="rounded border p-2">
-          <option value="" disabled>Choisir un navire</option>
-          {vessels.map((v) => (
-            <option key={v.id} value={v.id}>
-              {v.name} ({v.lengthM} m, {v.draftM} m)
-            </option>
-          ))}
-        </select>
-        <input
-          name="port"
-          defaultValue={port ?? ""}
-          placeholder="Port (ex : Marseille)"
-          className="rounded border p-2"
-        />
-        <button className="rounded bg-blue-700 p-2 text-white">Rechercher</button>
+      <p className="text-sm text-slate-600">
+        Choisissez le navire à faire caréner : seuls les chantiers dont le dock
+        accepte ses dimensions seront proposés.
+      </p>
+
+      <form
+        method="get"
+        className="grid gap-4 rounded-lg border border-slate-200 bg-white p-4 shadow-sm"
+      >
+        <label className="grid gap-1 text-sm font-medium">
+          Navire
+          <select
+            name="vesselId"
+            defaultValue={vesselId ?? ""}
+            required
+            className="rounded-lg border border-slate-200 bg-white p-2 font-normal"
+          >
+            <option value="" disabled>Choisir un navire</option>
+            {vessels.map((v) => (
+              <option key={v.id} value={v.id}>
+                {v.name} ({v.lengthM} m, {v.draftM} m)
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="grid gap-1 text-sm font-medium">
+          Port (optionnel)
+          <input
+            name="port"
+            defaultValue={port ?? ""}
+            placeholder="ex : Marseille"
+            className="rounded-lg border border-slate-200 bg-white p-2 font-normal"
+          />
+        </label>
+
+        <button className="rounded-lg bg-blue-700 p-2 text-white hover:bg-blue-800">
+          Rechercher
+        </button>
       </form>
 
       {vessel && shipyards.length === 0 && (
@@ -66,7 +89,7 @@ export default async function SearchPage({
 
       {vessel &&
         shipyards.map((y) => (
-          <section key={y.id} className="rounded border p-4">
+          <section key={y.id} className="rounded-lg border border-slate-200 bg-white shadow-sm p-4">
             <h2 className="font-semibold">{y.name}</h2>
             <p className="text-sm text-gray-600">
               {y.port} · dock jusqu'à {y.maxLengthM} m / {y.maxDraftM} m
@@ -78,7 +101,7 @@ export default async function SearchPage({
                 <p className="text-sm text-gray-500">Aucun créneau libre.</p>
               )}
               {y.slots.map((s) => (
-                <div key={s.id} className="rounded border p-3">
+                <div key={s.id} className="rounded-lg border border-slate-200 bg-white shadow-sm p-3">
                   <p className="text-sm font-medium">
                     {s.startDate.toLocaleDateString("fr-FR")} →{" "}
                     {s.endDate.toLocaleDateString("fr-FR")}

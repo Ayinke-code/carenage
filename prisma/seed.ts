@@ -11,16 +11,16 @@ async function main() {
   await prisma.vessel.deleteMany();
   await prisma.user.deleteMany();
 
-  const passwordHash = await bcrypt.hash("demo1234", 10);
+  const passwordHash = await bcrypt.hash("carenage123", 10);
 
   const owner = await prisma.user.create({
-    data: { email: "owner@demo.com", name: "Armateur Demo", role: "OWNER", passwordHash },
+    data: { email: "armateur@carenage.test", name: "Marc Lefèvre", role: "OWNER", passwordHash },
   });
   const yardManager = await prisma.user.create({
-    data: { email: "yard@demo.com", name: "Chantier Demo", role: "SHIPYARD", passwordHash },
+    data: { email: "chantier@carenage.test", name: "Claire Dubois", role: "SHIPYARD", passwordHash },
   });
   await prisma.user.create({
-    data: { email: "admin@demo.com", name: "Admin Demo", role: "ADMIN", passwordHash },
+    data: { email: "admin@carenage.test", name: "Administrateur", role: "ADMIN", passwordHash },
   });
 
   const ferry = await prisma.vessel.create({
